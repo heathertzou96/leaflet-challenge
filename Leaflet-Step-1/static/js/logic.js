@@ -1,3 +1,18 @@
+var myMap = L.map("map", {
+    center: [37.09, -95.71],
+    zoom: 5,
+    //layers: [lightMap, earthquakes]
+});
+
+var lightMap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox/light-v10',
+    tileSize: 512,
+    zoomOffset: -1,
+    accessToken: API_KEY
+}).addTo(myMap);   
+
 var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
 
 d3.json(queryUrl, function(data) {
@@ -47,19 +62,16 @@ function createFeatures(earthquakeData) {
                 radius: markerSize(feature.properties.mag), 
                 fillColor: getColor(feature.properties.mag),
                 color: "#000",
-                weight: 1,
+                weight: 0.5,
                 opacity: 1,
                 fillOpacity: 0.8
             });
         }
-    });
-
-    createMap(earthquakes);
-
+    }).addTo(myMap);
 
     var legend = L.control({position: 'bottomright'});
 
-    legend.onAdd = function (map) {
+    legend.onAdd = function () {
 
         var div = L.DomUtil.create('div', 'info legend'),
             grades = [0, 1, 2, 3, 4, 5],
@@ -75,28 +87,10 @@ function createFeatures(earthquakeData) {
         return div;
     };
 
-    //legend.addTo(myMap);
-    createMap(legend);
+    legend.addTo(myMap);
+   
 }
 
 
 
 
-function createMap(earthquakes) { 
-
-    var lightMap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        maxZoom: 18,
-        id: 'mapbox/light-v10',
-        tileSize: 512,
-        zoomOffset: -1,
-        accessToken: API_KEY
-    });   
-
-    var myMap = L.map("map", {
-        center: [37.09, -95.71],
-        zoom: 5,
-        layers: [lightMap, earthquakes]
-    });
-  
-} 
