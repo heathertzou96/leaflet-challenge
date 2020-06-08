@@ -17,6 +17,16 @@ function createFeatures(earthquakeData) {
         return mag * 5;
     }
 
+    function getColor(mag) {
+        return mag > 5 ? '#b30000' :
+               mag > 4 ? '#e34a33' :
+               mag > 3 ? '#fc8d59' :
+               mag > 2 ? '#fdd49e' : 
+               mag > 1 ? '#d9f0a3' :
+                         '#addd8e';
+            
+    }
+
     // var circleMarker = {
     //     radius: 8,
     //     fillColor: "#ff7800",
@@ -35,18 +45,38 @@ function createFeatures(earthquakeData) {
             //console.log(latlng);
             return L.circleMarker(latlng, {
                 radius: markerSize(feature.properties.mag), 
-                fillColor: "#ff7800",
+                fillColor: getColor(feature.properties.mag),
                 color: "#000",
                 weight: 1,
                 opacity: 1,
                 fillOpacity: 0.8
             });
-       
         }
-    
     });
 
     createMap(earthquakes);
+
+
+    var legend = L.control({position: 'bottomright'});
+
+    legend.onAdd = function (map) {
+
+        var div = L.DomUtil.create('div', 'info legend'),
+            grades = [0, 1, 2, 3, 4, 5],
+            labels = [];
+
+    // loop through our density intervals and generate a label with a colored square for each interval
+        for (var i = 0; i < grades.length; i++) {
+            div.innerHTML +=
+                '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+                grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+        }
+
+        return div;
+    };
+
+    //legend.addTo(myMap);
+    createMap(legend);
 }
 
 
